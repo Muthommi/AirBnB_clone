@@ -3,21 +3,36 @@
 import cmd
 
 class Math(cmd.Cmd):
+    """simple command line processor."""
+
+    prompt = '(hbnb)'
+
     def do_multiply(self, s):
-        l = s.split()
-        if len(l) != 2:
+        """multiply two numbers provided as arguments."""
+        args = s.split()
+        if len(args) != 2:
             print("invalid calculation")
             return
         try:
-            l = [int(i) for i in l]
+            args = [int(arg) for arg in args]
         except ValueError:
             print("arguments should be numbers")
             return
-        print(l[0] * l[1])
+        print(args[0] * args[1])
 
     def do_EOF(self, line):
+        """Handle end of file (EOF)command to exit."""
         print("Exiting....")
+        return True
+    def do_quit(self, line):
+        """Quit command to exit the program."""
         return True
 
 if __name__ == '__main__':
-    Math().cmdloop()
+    import sys
+    if sys.stdin.isatty():
+        Math().cmdloop()
+    else:
+        Math().stdin = sys.stdin
+        Math().stdout = sys.stdout
+        Math().cmdloop()
