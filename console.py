@@ -8,21 +8,6 @@ class HBNB(cmd.Cmd):
 
     prompt = '(hbnb)'
 
-    def do_create(self, args):
-        """Creates a new user."""
-        pass
-
-    def do_update(self, args):
-        """Updates the details of the user."""
-        pass
-
-    def do_destroy(self, args):
-        """Deletes a certain user."""
-        pass
-
-    def do_show(self, args):
-        """Shows the user."""
-        pass
 
     def do_EOF(self, args):
         """Handle end of file command to exit."""
