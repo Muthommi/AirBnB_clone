@@ -4,7 +4,7 @@ import cmd
 import sys
 
 
-class HBNB(cmd.Cmd):
+class HBNBCommand(cmd.Cmd):
     """Console for managing objects."""
 
     prompt = '(hbnb) '
@@ -24,10 +24,12 @@ class HBNB(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    if sys.stdin.isatty():
-        HBNB().cmdloop()
+    import sys
+    import os
+    if os.isatty(sys.stdin.fileno()):
+        HBNBCommand().cmdloop()
     else:
-        cmd_instance = HBNB()
+        cmd_instance = HBNBCommand()
         cmd_instance.use_rawinput = False
         cmd_instance.stdin = sys.stdin
         cmd_instance.stdout = sys.stdout
