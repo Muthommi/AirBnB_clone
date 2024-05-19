@@ -3,11 +3,10 @@
 import cmd
 
 
-class HBNB(cmd.Cmd):
+class HBNBCommand(cmd.Cmd):
     """Console for managing objects."""
 
-    prompt = '(hbnb)'
-
+    prompt = '(hbnb) '
 
     def do_EOF(self, args):
         """Handle end of file command to exit."""
@@ -24,6 +23,7 @@ class HBNB(cmd.Cmd):
 
 
 if __name__ == '__main__':
+    HBNB().cmdloop()
     import sys
     if sys.stdin.isatty():
         HBNB().cmdloop()
