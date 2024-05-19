@@ -2,6 +2,7 @@
 
 import cmd
 import sys
+import os
 
 
 class HBNBCommand(cmd.Cmd):
@@ -24,8 +25,6 @@ class HBNBCommand(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    import sys
-    import os
     if os.isatty(sys.stdin.fileno()):
         HBNBCommand().cmdloop()
     else:
