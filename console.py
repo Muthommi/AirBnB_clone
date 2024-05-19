@@ -3,7 +3,7 @@
 import cmd
 
 
-class HBNBCommand(cmd.Cmd):
+class HBNB(cmd.Cmd):
     """Console for managing objects."""
 
     prompt = '(hbnb) '
