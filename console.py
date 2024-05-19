@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import cmd
+import sys
 
 
 class HBNB(cmd.Cmd):
@@ -23,11 +24,11 @@ class HBNB(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    HBNB().cmdloop()
-    import sys
     if sys.stdin.isatty():
         HBNB().cmdloop()
     else:
-        HBNB().stdin = sys.stdin
-        HBNB().stdout = sys.stdout
-        HBNB().cmdloop()
+        cmd_instance = HBNB()
+        cmd_instance.use_rawinput = False
+        cmd_instance.stdin = sys.stdin
+        cmd_instance.stdout = sys.stdout
+        cmd_instance.cmdloop()
