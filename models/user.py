@@ -1,14 +1,12 @@
 #!/usr/bin/python3
-"""This model creates a user's details"""
+"""This module defines a class User"""
 
-from models.base_model.py import Basemodel
+from models.base_model import BaseModel
 
 
-class user(BaseModel):
-    def __init__(self, *arg, **kwargs):
-        """Initializes a new user."""
-        self.email = ""
-        self.password = ""
-        self.first_name = ""
-        self.last_name = ""
-        super().__init__(*args, **kwargs)
+class User(BaseModel):
+    """Represents a user for a MySQL database"""
+    email = ""
+    password = ""
+    first_name = ""
+    last_name = ""

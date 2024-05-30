@@ -1,10 +1,10 @@
+#!/usr/bin/python3
 import unittest
 from io import StringIO
 from console import HBNBCommand
 from unittest.mock import patch
 from models import storage
 from models.base_model import BaseModel
-import re
 
 
 class TestHBNBCommand(unittest.TestCase):
@@ -63,13 +63,7 @@ class TestHBNBCommand(unittest.TestCase):
 
         with patch('sys.stdout', new=StringIO()) as output:
             self.console.onecmd("create BaseModel")
-            output_value = output.getvalue().strip()
-            # Check if output_value is a valid UUID
-            uuid_pattern = re.compile(
-                r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-'
-                r'[a-f0-9]{4}-[a-f0-9]{12}$'
-            )
-            self.assertTrue(uuid_pattern.match(output_value))
+            self.assertIn("BaseModel.", output.getvalue().strip())
 
     def test_show(self):
         """Test show command with various scenarios."""

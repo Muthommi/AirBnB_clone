@@ -1,8 +1,5 @@
 #!/usr/bin/python3
-
 import cmd
-import sys
-import os
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
@@ -57,7 +54,7 @@ class HBNBCommand(cmd.Cmd):
             return
         new_instance = self.classes[class_name]()
         new_instance.save()
-        print(f"{new_instance.id}")
+        print(new_instance.id)
 
     def do_show(self, line):
         """Show an object."""
@@ -82,11 +79,4 @@ class HBNBCommand(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    if os.isatty(sys.stdin.fileno()):
-        HBNBCommand().cmdloop()
-    else:
-        cmd_instance = HBNBCommand()
-        cmd_instance.use_rawinput = False
-        cmd_instance.stdin = sys.stdin
-        cmd_instance.stdout = sys.stdout
-        cmd_instance.cmdloop()
+    HBNBCommand().cmdloop()
