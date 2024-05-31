@@ -2,8 +2,6 @@
 
 import json
 import os
-from datetime import datetime
-from models.base_model import BaseModel
 
 
 class FileStorage:
@@ -26,13 +24,10 @@ class FileStorage:
     def reload(self):
         """Deserializes objects to JSON file"""
         if os.path.exists(FileStorage.__file_path):
-            try:
-                with open(FileStorage.__file_path, 'r') as f:
-                    obj_dict = json.load(f)
-                    for key, value in obj_dict.items():
-                        cls_name = value['__class__']
-                        cls = globals().get(cls_name)
-                        if cls:
-                            FileStorage.__objects[key] = cls(**value)
-            except (FileNotFoundError, json.JSONDecodeError) as e:
-                pass
+            with open(FileStorage.__file_path, 'r') as f:
+                obj_dict = json.load(f)
+                for key, value in obj_dict.items():
+                    cls_name = value['__class__']
+                    from models.base_model import BaseModel
+                    if cls_name == "BaseModel":
+                        FileStorage.__objects[key] = BaseModel(**value)
