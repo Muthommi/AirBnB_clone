@@ -4,6 +4,7 @@
 import json
 from os import path
 from models.base_model import BaseModel
+from models.user import User
 
 
 class FileStorage:
@@ -19,8 +20,10 @@ class FileStorage:
         """Adds a new object"""
         self.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
 
-    def save(self, obj):
-        FileStorage.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
+    def save(self, obj=None):
+        """Saves object to the file"""
+        if obj:
+            self.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
         self._save_to_file()
 
     def _save_to_file(self):
