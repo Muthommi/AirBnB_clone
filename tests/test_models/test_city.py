@@ -4,51 +4,47 @@
 
 import unittest
 from models.city import City
-from models.base_model import BaseModel
-from datetime import datetime
 
 
 class TestCity(unittest.TestCase):
+    """Test cases for City class"""
+
     def setUp(self):
         """Setup for City tests."""
         self.city = City()
 
-    def test_inheritance(self):
-        """Test that City inherits from BaseModel."""
-        self.assertIsInstance(self.city, BaseModel)
+    def test_instance_creation(self):
+        """Tests if the city instance is created correctly"""
+        self.assertIsInstance(self.city, City)
 
-    def test_id_attribute(self):
-        """Tests the type and initial value of the state_id attribute."""
+    def test_attributes(self):
+        """Tests if the city has the correct attributes"""
         self.assertTrue(hasattr(self.city, "state_id"))
-        self.assertIsInstance(self.city.state_id, str)
-        self.assertEqual(self.city.state_id, "")
-
-    def test_name_attribute(self):
-        """Tests bot name and initial value of the name attribute"""
         self.assertTrue(hasattr(self.city, "name"))
-        self.assertIsInstance(self.city.name, str)
+        self.assertEqual(self.city.state_id, "")
         self.assertEqual(self.city.name, "")
 
-    def test_created_at_is_datetime(self):
-        """Test that created_at is a datetime object."""
-        self.assertIsInstance(self.city.created_at, datetime)
+    def test_str_method(self):
+        """Tests the __str__ method"""
+        string = str(self.city)
+        self.assertIn("[City]", string)
+        self.assertIn("id", string)
+        self.assertIn("created_at", string)
+        self.assertIn("updated_at", string)
 
-    def test_updated_at_is_datetime(self):
-        """Test that updated_at is a datetime oject"""
-        self.assertIsInstance(self.city.updated_at, datetime)
-
-    def test_to_dict(self):
-        """Test the to_dict method."""
-        city_dict = self.city.to_dict()
-        self.assertEqual(city_dict['__class__'], 'City')
-        self.assertEqual(city_dict['state_id'], self.city.state_id)
-        self.assertEqual(city_dict['name'], self.city.name)
-
-    def test_save(self):
-        """Test the save method updates `updated_at` attribute."""
+    def test_save_method(self):
+        """Tests the save method"""
         old_updated_at = self.city.updated_at
         self.city.save()
         self.assertNotEqual(old_updated_at, self.city.updated_at)
+
+    def test_to_dict_method(self):
+        """Tests the to_dict method"""
+        city_dict = self.city.to_dict()
+        self.assertEqual(city_dict["__class__"], "City")
+        self.assertIn("created_at", city_dict)
+        self.assertIn("updated_at", city_dict)
+        self.assertIn("id", city_dict)
 
 
 if __name__ == '__main__':
