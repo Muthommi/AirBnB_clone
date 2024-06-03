@@ -17,7 +17,7 @@ from models.review import Review
 class HBNBCommand(cmd.Cmd):
     """Command interpreter class"""
 
-    prompt = "(hbnb)"
+    prompt = "(hbnb) "
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -32,19 +32,19 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, arg):
-        """Creates a new instance of BaseModel"""
+        """Creates a new instance of BaseModel, saves it (to the JSON file) and prints the id."""
         if not arg:
             print("** class name missing **")
             return
         try:
-            new_instance = eval(arg)()
+            new_instance = storage.classes()[arg]()
             new_instance.save()
             print(new_instance.id)
-        except NameError:
+        except KeyError:
             print("** class doesn't exist **")
 
     def do_show(self, arg):
-        """Prints the string reps of an instance"""
+        """Prints the string representation of an instance based on the class name and id."""
         args = arg.split()
         if not args:
             print("** class name missing **")
@@ -63,7 +63,7 @@ class HBNBCommand(cmd.Cmd):
             print(obj)
 
     def do_destroy(self, arg):
-        """Deletes an instance based on the class name and id"""
+        """Deletes an instance based on the class name and id (save the change into the JSON file)."""
         args = arg.split()
         if not args:
             print("** class name missing **")
@@ -82,7 +82,7 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
 
     def do_all(self, arg):
-        """Prints all string reps of all instances"""
+        """Prints all string representation of all instances based or not on the class name."""
         if arg:
             if arg not in storage.classes():
                 print("** class doesn't exist **")
@@ -93,7 +93,7 @@ class HBNBCommand(cmd.Cmd):
         print(objs)
 
     def do_update(self, arg):
-        """Updates an instance based on the class name and id"""
+        """Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file)."""
         args = arg.split()
         if not args:
             print("** class name missing **")
@@ -125,7 +125,7 @@ class HBNBCommand(cmd.Cmd):
         obj.save()
 
     def default(self, line):
-        """Override default method to handle custom commands"""
+        """Override default method to handle custom commands like <class name>.all()"""
         if "." in line:
             parts = line.split(".")
             if len(parts) == 2 and parts[1] == "all()":
