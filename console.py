@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-This module defines the HBNBCommand class for the command interpreter.
+Command interpreter for the AirBNB the console project.
 """
 
 import cmd
@@ -15,18 +15,9 @@ from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
-    """Command interpreter class for HBNB"""
-    prompt = '(hbnb)'
+    """Command interpreter class"""
 
-    classes = {
-            "BaseModel": BaseModel,
-            "User": User,
-            "State": State,
-            "City": City,
-            "Amenity": Amenity,
-            "Place": Place,
-            "Review": Review
-    }
+    prompt = "(hbnb)"
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -45,20 +36,39 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        if arg not in HBNBCommand.classes:
+        try:
+            new_instance = eval(arg)()
+            new_instance.save()
+            print(new_instance.id)
+        except NameError:
             print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[arg]()
-        new_instance.save()
-        print(new_instance.id)
 
     def do_show(self, arg):
-        """Prints string rep of an instance"""
+        """Prints the string reps of an instance"""
         args = arg.split()
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in HBNBCommand.classes:
+        if args[0] not in storage.classes():
+            print("** class doesn't exist **")
+            return
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        key = f"{args[0]}.{args[1]}"
+        obj = storage.all().get(key)
+        if not obj:
+            print("** no instance found **")
+        else:
+            print(obj)
+
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id"""
+        args = arg.split()
+        if not args:
+            print("** class name missing **")
+            return
+        if args[0] not in storage.classes():
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -67,38 +77,20 @@ class HBNBCommand(cmd.Cmd):
         key = f"{args[0]}.{args[1]}"
         if key not in storage.all():
             print("** no instance found **")
-            return
-        print(storage.all()[key])
-
-    def do_destroy(self, arg):
-        """Deletes an instance based on class name and id"""
-        args = arg.split()
-        if not args:
-            print("** class name missing **")
-            return
-        if args[0] not in HNBCommand.classes:
-            print("** class doesn't exist")
-            return
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-        key = f"{args[0]}.{args[1]}"
-        if key not in storage.all():
-            print("** no intance found **")
-            return
-        del storage.all()[key]
-        storage.save()
+        else:
+            del storage.all()[key]
+            storage.save()
 
     def do_all(self, arg):
         """Prints all string reps of all instances"""
-        if arg and arg not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        object = storage.all()
-        if not arg:
-            print([str(obj) for obj in objects.values()])
+        if arg:
+            if arg not in storage.classes():
+                print("** class doesn't exist **")
+                return
+            objs = [str(obj) for key, obj in storage.all().items() if key.startswith(arg)]
         else:
-            print([str(obj) for obj in objects.values() if obj.__class__.__name__ == arg])
+            objs = [str(obj) for obj in storage.all().values()]
+        print(objs)
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
@@ -106,14 +98,15 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in HBNBCommand.classes:
+        if args[0] not in storage.classes():
             print("** class doesn't exist **")
             return
         if len(args) < 2:
             print("** instance id missing **")
             return
         key = f"{args[0]}.{args[1]}"
-        if key not in storage.all():
+        obj = storage.all().get(key)
+        if not obj:
             print("** no instance found **")
             return
         if len(args) < 3:
@@ -122,10 +115,29 @@ class HBNBCommand(cmd.Cmd):
         if len(args) < 4:
             print("** value missing **")
             return
+        attr_name = args[2]
+        attr_value = args[3].strip('"')
+        if hasattr(obj, attr_name):
+            attr_type = type(getattr(obj, attr_name))
+            setattr(obj, attr_name, attr_type(attr_value))
+        else:
+            setattr(obj, attr_name, attr_value)
+        obj.save()
 
-        instance = storage.all()[key]
-        setattr(instance, args[2], eval(args[3]))
-        instance.save()
+    def default(self, line):
+        """Override default method to handle custom commands"""
+        if "." in line:
+            parts = line.split(".")
+            if len(parts) == 2 and parts[1] == "all()":
+                class_name = parts[0]
+                if class_name in storage.classes():
+                    self.do_all(class_name)
+                else:
+                    print("** class doesn't exist **")
+            else:
+                print("*** Unknown syntax: {}".format(line))
+        else:
+            print("*** Unknown syntax: {}".format(line))
 
 
 if __name__ == '__main__':
