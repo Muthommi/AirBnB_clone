@@ -25,13 +25,8 @@ class FileStorage:
         """Adds a new object"""
         self.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
 
-    def save(self, obj=None):
-        """Saves object to the file"""
-        if obj:
-            self.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
-        self._save_to_file()
-
-    def _save_to_file(self):
+    def save(self):
+        """Serializes objects to the JSON file"""
         with open(FileStorage.__file_path, 'w') as f:
             json.dump({key: obj.to_dict() for key, obj in FileStorage.__objects.items()}, f)
 
@@ -42,8 +37,9 @@ class FileStorage:
                 objects = json.load(f)
                 for key, value in objects.items():
                     cls_name = value['__class__']
-                    cls = globals()[cls_name]
-                    self.__objects[key] = cls(**value)
+                    cls = globals().get(cls_name)
+                    if cls:
+                        self.__objects[key] = cls(**value)
 
 
 storage = FileStorage()

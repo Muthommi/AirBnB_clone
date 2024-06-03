@@ -7,11 +7,26 @@ import cmd
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
     """Command interpreter class for HBNB"""
     prompt = '(hbnb)'
+
+    classes = {
+            "BaseModel": BaseModel,
+            "User": User,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Place": Place,
+            "Review": Review
+    }
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -30,12 +45,12 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        try:
-            new_instance = eval(arg)()
-            new_instance.save()
-            print(new_instance.id)
-        except NameError:
+        if arg not in HBNBCommand.classes:
             print("** class doesn't exist **")
+            return
+        new_instance = HBNBCommand.classes[arg]()
+        new_instance.save()
+        print(new_instance.id)
 
     def do_show(self, arg):
         """Prints string rep of an instance"""
@@ -43,10 +58,10 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in globals():
+        if args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        if len(args) == 1:
+        if len(args) < 2:
             print("** instance id missing **")
             return
         key = f"{args[0]}.{args[1]}"
@@ -61,10 +76,10 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in globals():
+        if args[0] not in HNBCommand.classes:
             print("** class doesn't exist")
             return
-        if len(args) == 1:
+        if len(args) < 2:
             print("** instance id missing **")
             return
         key = f"{args[0]}.{args[1]}"
@@ -72,18 +87,18 @@ class HBNBCommand(cmd.Cmd):
             print("** no intance found **")
             return
         del storage.all()[key]
-        storage._save_to_file()
+        storage.save()
 
     def do_all(self, arg):
         """Prints all string reps of all instances"""
-        if arg and arg not in globals():
+        if arg and arg not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        result = []
-        for obj in storage.all().values():
-            if not arg or arg == obj.__class__.__name__:
-                result.append(str(obj))
-        print(result)
+        object = storage.all()
+        if not arg:
+            print([str(obj) for obj in objects.values()])
+        else:
+            print([str(obj) for obj in objects.values() if obj.__class__.__name__ == arg])
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
@@ -91,28 +106,26 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in globals():
+        if args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        if len(args) == 1:
+        if len(args) < 2:
             print("** instance id missing **")
             return
         key = f"{args[0]}.{args[1]}"
         if key not in storage.all():
             print("** no instance found **")
             return
-        if len(args) == 2:
+        if len(args) < 3:
             print("** attribute name missing **")
             return
-        if len(args) == 3:
+        if len(args) < 4:
             print("** value missing **")
             return
 
-        obj = storage.all()[key]
-        attr_name = args[2]
-        attr_value = eval(args[3])
-        setattr(obj, attr_name, attr_value)
-        obj.save()
+        instance = storage.all()[key]
+        setattr(instance, args[2], eval(args[3]))
+        instance.save()
 
 
 if __name__ == '__main__':
