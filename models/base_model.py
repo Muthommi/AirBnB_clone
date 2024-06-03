@@ -3,6 +3,7 @@
 
 import uuid
 from datetime import datetime
+import json
 
 
 class BaseModel:
@@ -32,7 +33,7 @@ class BaseModel:
     def save(self):
         self.updated_at = datetime.now()
         from models import storage
-        storage.save()
+        storage.save(self)
 
     def to_dict(self):
         obj_dict = self.__dict__.copy()

@@ -1,10 +1,13 @@
 #!/usr/bin/python3
+"""This module defines the FileStorage class."""
 
 import json
-import os
+from os import path
+from models.base_model import BaseModel
 
 
 class FileStorage:
+    """Simple file storage system for models"""
     __file_path = "file.json"
     __objects = {}
 
@@ -13,21 +16,27 @@ class FileStorage:
         return FileStorage.__objects
 
     def new(self, obj):
-        key = f"{obj.__class__.__name__}.{obj.id}"
-        FileStorage.__objects[key] = obj
+        """Adds a new object"""
+        self.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
 
-    def save(self):
-        obj_dict = {key: obj.to_dict() for key, obj in FileStorage.__objects.items()}
+    def save(self, obj):
+        FileStorage.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
+        self._save_to_file()
+
+    def _save_to_file(self):
         with open(FileStorage.__file_path, 'w') as f:
-            json.dump(obj_dict, f)
+            json.dump({key: obj.to_dict() for key, obj in FileStorage.__objects.items()}, f)
 
     def reload(self):
         """Deserializes objects to JSON file"""
-        if os.path.exists(FileStorage.__file_path):
+        if path.exists(FileStorage.__file_path):
             with open(FileStorage.__file_path, 'r') as f:
-                obj_dict = json.load(f)
-                for key, value in obj_dict.items():
+                objects = json.load(f)
+                for key, value in objects.items():
                     cls_name = value['__class__']
-                    from models.base_model import BaseModel
-                    if cls_name == "BaseModel":
-                        FileStorage.__objects[key] = BaseModel(**value)
+                    cls = globals()[cls_name]
+                    self.__objects[key] = cls(**value)
+
+
+storage = FileStorage()
+storage.reload()
